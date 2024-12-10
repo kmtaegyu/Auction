@@ -1,0 +1,78 @@
+{% extends 'layout.html' %}
+<!-- layout.html을 확장하여 사용합니다. -->
+
+{% block content %}
+<!-- content 블록을 정의합니다. -->
+  <div class="timeline">
+  <!-- 타임라인을 표시하는 div입니다. -->
+    <h2>경매 진행 목록</h2>
+    <!-- 제목을 표시합니다. -->
+    <table id="good-list">
+    <!-- 경매 상품 목록을 나타내는 테이블입니다. -->
+      <tr>
+        <!-- 각 열의 제목을 정의합니다. -->
+        <th>상품명</th>
+        <th>이미지</th>
+        <th>시작 가격</th>
+        <th>종료 시간</th>
+        <th>입장</th>
+      </tr>
+      <!-- goods 배열에서 각 상품에 대한 정보를 순회하며 행을 생성합니다. -->
+      {% for good in goods %}
+        <tr>
+          <!-- 각 상품의 정보를 표시하는 열입니다. -->
+          <td>{{good.name}}</td>
+          <!-- 상품명을 출력합니다. -->
+          <td>
+            <!-- 상품 이미지를 출력합니다. -->
+            <img src="/img/{{good.img}}">
+          </td>
+          <td>{{good.price}}</td>
+          <!-- 시작 가격을 출력합니다. -->
+          <td class="time" data-start="{{good.createdAt}}">00:00:00</td>
+          <!-- 경매 종료 시간을 표시하는 열입니다. -->
+          <td>
+            <!-- 각 상품에 입장할 수 있는 링크입니다. -->
+            <a href="/good/{{good.id}}" class="enter btn">입장</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <!-- 타임라인 div 종료 -->
+
+  <!-- 실시간으로 경매 종료 시간을 업데이트하는 스크립트입니다. -->
+  <script src="https://unpkg.com/event-source-polyfill/src/eventsource.min.js"></script>
+  <script>
+    const es = new EventSource('/sse');
+    // EventSource 객체를 생성하여 서버와의 연결을 설정합니다.
+    es.onmessage = function (e) {
+      // 서버로부터 메시지를 수신하면 실행됩니다.
+      document.querySelectorAll('.time').forEach((td) => {
+        // 각 상품의 종료 시간을 표시하는 td 요소를 찾아서 반복합니다.
+        const end = new Date(td.dataset.start); // 경매 시작 시간을 가져옵니다.
+        const server = new Date(parseInt(e.data, 10));
+        // 서버의 현재 시간을 가져옵니다.
+        end.setDate(end.getDate() + 1); // 경매 종료 시간을 설정합니다.
+        if (server >= end) { // 경매가 종료되었으면
+          td.textContent = '00:00:00';
+          // 종료 시간을 00:00:00으로 설정합니다.
+        } else {
+          // 경매가 종료되지 않았으면
+          const t = end - server; // 경매 종료까지 남은 시간을 계산합니다.
+          const seconds = ('0' + Math.floor((t / 1000) % 60)).slice(-2);
+          const minutes = ('0' + Math.floor((t / 1000 / 60) % 60)).slice(-2);
+          const hours = ('0' + Math.floor((t / (1000 * 60 * 60)) % 24)).slice(-2);
+          // 시, 분, 초를 계산합니다.
+          td.textContent = hours + ':' + minutes + ':' + seconds ;
+          // 경매 종료까지 남은 시간을 업데이트합니다.
+        }
+      });
+    };
+  </script>
+{% endblock %}
+<!-- content 블록 종료 -->
+
+<!--이 코드는 경매 진행 목록을 표시하는 HTML 템플릿입니다. 경매 상품의 목록을 테이블로 표시하고, 
+  각 상품의 종료 시간을 실시간으로 업데이트합니다. 페이지 로드 시 경매 상품의 정보를 가져와 테이블에 표시하고, 
+  실시간으로 경매 종료 시간을 업데이트하는 JavaScript 코드가 포함되어 있습니다.-->

@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <!-- content 블록: 회원가입 양식을 포함합니다. -->
+  <div class="timeline">
+    <form action="/auth/join" id="join-form" method="post">
+      <!-- 회원가입 폼입니다. -->
+      <div class="input-group">
+        <!-- 이메일 입력란 -->
+        <label for="join-email">이메일</label>
+        <input type="email" id="join-email" name="email">
+      </div>
+      <div class="input-group">
+        <!-- 닉네임 입력란 -->
+        <label for="join-nick">닉네임</label>
+        <input type="text" id="join-nick" name="nick">
+      </div>
+      <div class="input-group">
+        <!-- 비밀번호 입력란 -->
+        <label for="join-password">비밀번호</label>
+        <input type="password" id="join-password" name="password">
+      </div>
+      <div class="input-group">
+        <!-- 보유자산 입력란 -->
+        <label for="join-money">보유자산</label>
+        <input type="number" id="join-money" name="money">
+      </div>
+      <button id="join-btn" class="btn" type="submit">회원가입</button>
+      <!-- 회원가입 버튼 -->
+    </form>
+  </div>
+  <!-- 회원가입 양식이 들어갈 컨테이너입니다. -->
+  <script>
+    // 페이지가 로드될 때 에러 메시지를 확인하는 스크립트입니다.
+    window.onload = () => {
+      if (new URL(location.href).searchParams.get('error')) {
+        alert(new URL(location.href).searchParams.get('error'));
+      }
+    };
+  </script>
+  <!-- 에러 메시지를 출력하는 스크립트입니다. -->
+{% endblock %}
+</html>
+
+<!--이 코드는 회원가입 양식을 표시하는 HTML 템플릿입니다. 
+  사용자가 이메일, 닉네임, 비밀번호, 보유자산을 입력하여 회원가입을 할 수 있습니다. 
+  또한, 페이지 로드 시 에러 메시지가 있는 경우 해당 메시지를 알림창으로 표시합니다.-->
